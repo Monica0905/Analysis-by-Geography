@@ -13,7 +13,8 @@ require(readr)
   
 # Deal with missing data
 ```{r}
-setwd("O:/Arrest Trends - Phase II/Suburb Analysis/Data")
+#setwd("O:/Arrest Trends - Phase II/Suburb Analysis/Data")
+setwd("D:/NYU/CAREER/Vera Institute of Justice/Work Materials")
 load("jail_arrest_county.RData")
 
 
@@ -89,41 +90,10 @@ urbanicity <- list(rural, sm, suburb, urban)
 
 # Calculate rates
 
+## Source the rate calculation function
 ```{r}
-# Write a function to calculate the jail admission rates and arrest rates
-cal_rates <- function(dat, use.pop.jail = TRUE) {
-
-  dat <- arrange(dat, YEAR)
-  
-  # Aggregate number of arrests and number of jail admission
-  rates <- dat %>%
-    group_by(YEAR) %>%
-    summarise(## Creat indicators for whether all the data are missing for the year
-              missing_arrest = mean(is.na(total_arrest)),
-              missing_jail = mean(is.na(total_jail)),
-              ## Aggregate the numbers
-              total_arrest = sum(total_arrest, na.rm = T), 
-              total_jail = sum(total_jail, na.rm = T),
-              pop_arrest = sum(pop_arrest, na.rm = T),
-              pop_jail = sum(pop_jail, na.rm = T)
-              )
-  
-  # If all the data are missing for the year, then convert the 0 to NA
-  rates$total_arrest[rates$missing_arrest==1] <- NA
-  rates$total_jail[rates$missing_jail==1] <- NA
-  
-  if (use.pop.jail) {
-    rates <- rates %>%
-      mutate(rate_arrest = total_arrest/pop_jail * 100000,
-             rate_jail = total_jail/pop_jail * 100000)
-  } else {
-    rates <- rates %>%
-      mutate(rate_arrest = total_arrest/pop_arrest * 100000,
-             rate_jail = total_jail/pop_arrest * 100000)
-  }
-  
-  return(rates)
-}
+setwd("D:/NYU/CAREER/Vera Institute of Justice/Work Materials/Analysis-by-Geography/Scripts")
+source("Rate Calculation Function.R")
 ```
 
 
@@ -141,8 +111,47 @@ for (i in 1:4) {
   rates[[i]] <- rates[[i]] %>%
     filter(! (YEAR %in% c(1977:1980, 2015:2016)))
 }
+```
 
 
+# Get the rates table
+```{r}
+# Arrest and jail admission rates by the three methods for the four geography types
+rates_list <- list()
+geo_names <- c("rural", "small/mid", "suburb", "urban")
+for (i in 1:4) {
+  dirc <- rates_list[[i]] <- cal_rates(urbanicity[[i]], method = "direct")
+  rates_list[[i]]$arrest_dirc <- dirc$rate_arrest
+  rates_list[[i]]$jail_dirc <- dirc$rate_jail
+  
+  simp <- cal_rates(urbanicity[[i]], method = "simple")
+  rates_list[[i]]$arrest_simp <- simp$rate_arrest
+  rates_list[[i]]$jail_simp <- simp$rate_jail
+  
+  wt <- cal_rates(urbanicity[[i]], method = "weighted")
+  rates_list[[i]]$arrest_wt <- wt$rate_arrest
+  rates_list[[i]]$jail_wt <- wt$rate_jail
+  
+  rates_list[[i]] <- rates_list[[i]] %>%
+    mutate(geography = geo_names[i]) %>%
+    select(YEAR, geography,
+           arrest_dirc, arrest_simp, arrest_wt, 
+           jail_dirc, jail_simp, jail_wt)
+                          
+}
+
+
+# Combine them into one data frame
+arrest_jail_rates <- rates_list[[1]]
+for (i in 2:4) {
+  arrest_jail_rates <- rbind(arrest_jail_rates, rates_list[[i]])
+}
+arrest_jail_rates <- arrest_jail_rates %>%
+  arrange(YEAR, geography)
+
+# Save the table in csv
+setwd("D:/NYU/CAREER/Vera Institute of Justice/Work Materials/Analysis-by-Geography/Tables")
+write.csv(arrest_jail_rates, file = "Arrest & Jail Adm Rates_Missing data filtered.csv", row.names = FALSE)
 ```
 
 
