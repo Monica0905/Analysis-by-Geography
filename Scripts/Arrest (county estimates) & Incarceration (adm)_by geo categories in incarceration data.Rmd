@@ -272,7 +272,7 @@ color = c("gray30", "coral4", "chartreuse4", "blue4")
 
 par(mar = c(5, 4.5, 4, 4.5) + 0.1, xpd = TRUE)
 plot(x = rates[[1]]$YEAR, y = rates[[1]]$rate_jail, type = "l", col = color[1],
-     main = "Jail Admission and Arrest by Geography", 
+     main = "Jail Admission and Arrest Rate by Geography", 
      xlab = "Year", ylab = "Rate", xaxt='n', yaxt='n', font.lab = 4, bty = 'n',
      ylim = c(0, max(rates[[1]]$rate_jail, rates[[2]]$rate_jail, rates[[3]]$rate_jail, rates[[4]]$rate_jail, rates[[1]]$rate_arrest, rates[[2]]$rate_arrest, rates[[3]]$rate_arrest, rates[[4]]$rate_arrest, na.rm = TRUE)))
 for (i in 2:4) {
