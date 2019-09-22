@@ -262,6 +262,8 @@ for (i in 1:4) {
 
 legend("topright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3, inset = c(-0.28, 0),
        legend = c("rural", "small/mid", "suburb", "urban"))
+
+par(mar = c(5, 4, 4, 2) + 0.1)
 ```
 
 ### Plot the above image for blog post
