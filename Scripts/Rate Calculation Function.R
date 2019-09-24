@@ -1,13 +1,10 @@
 # Write a function to calculate the jail admission rates and arrest rates
-cal_rates <- function(dat, use.pop.jail = TRUE, method = "direct") {
+cal_rates <- function(dat, pop, method = "direct") {
   
   dat <- arrange(dat, YEAR)
   
-  if(use.pop.jail) {
-    dat$pop <- dat$pop_jail
-  } else {
-    dat$pop <- dat$pop_arrest
-  }
+  dat$pop <- pop
+
   
   if (method == "direct") {
     # Aggregate number of arrests and number of jail admission
