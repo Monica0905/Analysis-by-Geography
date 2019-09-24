@@ -348,7 +348,7 @@ cal_ses <- function(dat, sesvar, use.pop.jail = TRUE) {
 ```{r}
 inc <- list()
 for (i in 1:4) {
-  inc[[i]] <- cal_ses(urbanicity[[i]], urbanicity[[i]]$Median_Household_Inc) %>%
+  inc[[i]] <- cal_ses(urbanicity[[i]], urbanicity[[i]]$Median_Household_Inc, pop = urbanicity[[i]]$pop_jail) %>%
     #Keep 1995-2014 when the data are annually consecutive
     filter(YEAR >= 1995, YEAR <=  2014)
 }
@@ -382,7 +382,7 @@ legend("topleft", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, t
 ```{r}
 pov <- list()
 for (i in 1:4) {
-  pov[[i]] <- cal_ses(urbanicity[[i]], urbanicity[[i]]$Pct_Poverty) %>%
+  pov[[i]] <- cal_ses(urbanicity[[i]], urbanicity[[i]]$Pct_Poverty, pop = urbanicity[[i]]$pop_jail) %>%
     #Keep 1995-2014 when the data are annually consecutive
     filter(YEAR >= 1995, YEAR <=  2014)
 }
@@ -436,7 +436,7 @@ legend(x = 1994, y = 21, col = color, lty = 1, bty = "n", text.width = 5, cex = 
 ```{r}
 unemp <- list()
 for (i in 1:4) {
-  unemp[[i]] <- cal_ses(urbanicity[[i]], urbanicity[[i]]$UnemploymentRate) %>%
+  unemp[[i]] <- cal_ses(urbanicity[[i]], urbanicity[[i]]$UnemploymentRate, pop = urbanicity[[i]]$pop_jail) %>%
     #Keep 1995-2014 when the data are annually consecutive
     filter(YEAR >= 1995, YEAR <=  2014)
 }

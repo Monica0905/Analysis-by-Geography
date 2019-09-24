@@ -94,37 +94,25 @@ cal_rates <- function(dat, pop, method = "direct") {
 
 
 # Write the function to calculate the weighted mean of SES 
-cal_ses <- function(dat, sesvar, use.pop.jail = TRUE) {
+cal_ses <- function(dat, sesvar, pop) {
+  
+  dat$pop <- pop
   
   dat <- data.frame(dat, ses.var = sesvar) %>%
     arrange(YEAR)
   
-  if (use.pop.jail) {
-    dat <- dat %>%
-      group_by(YEAR) %>%
-      summarise(Total_POP = sum(pop_jail, na.rm = TRUE), 
-                ses_wt = sum(ses.var*pop_jail, na.rm = TRUE),
-                ## Creat indicators for whether all the data are missing for the year
-                missing_ses = mean(is.na(ses.var))) %>%
-      mutate(ses = ses_wt/Total_POP) %>%
-      select(-ses_wt)
+  dat <- dat %>%
+    group_by(YEAR) %>%
+    summarise(Total_POP = sum(pop, na.rm = TRUE), 
+              ses_wt = sum(ses.var*pop, na.rm = TRUE),
+              ## Creat indicators for whether all the data are missing for the year
+              missing_ses = mean(is.na(ses.var))) %>%
+    mutate(ses = ses_wt/Total_POP) %>%
+    select(-ses_wt)
     
-    # If all the data are missing for the year, then convert the 0 to NA
-    dat$ses[dat$missing_ses==1] <- NA
+  # If all the data are missing for the year, then convert the 0 to NA
+  dat$ses[dat$missing_ses==1] <- NA
     
-  } else {
-    dat <- dat %>%
-      group_by(YEAR) %>%
-      summarise(Total_POP = sum(pop_arrest, na.rm = TRUE), 
-                ses_wt = sum(ses.var*pop_arrest, na.rm = TRUE),
-                ## Creat indicators for whether all the data are missing for the year
-                missing_ses = mean(is.na(ses.var))) %>%
-      mutate(ses = ses_wt/Total_POP) %>%
-      select(-ses_wt) 
-    
-    # If all the data are missing for the year, then convert the 0 to NA
-    dat$ses[dat$missing_ses==1] <- NA
-  }
   
   return(dat)
 }
