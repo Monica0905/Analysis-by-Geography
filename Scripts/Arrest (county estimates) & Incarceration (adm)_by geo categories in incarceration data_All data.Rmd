@@ -67,6 +67,14 @@ save(jail_arrest, file = "jail_arrest_county.RData")
 setwd("D:/NYU/CAREER/Vera Institute of Justice/Work Materials")
 load("jail_arrest_county.RData")
 
+# Add the working age population to the dataset
+setwd("D:/NYU/CAREER/Vera Institute of Justice/Work Materials")
+pop_jail_work <- read_csv("incarceration_trends.csv") %>%
+  select(YEAR = year, FIPS = fips, pop_jail_work = total_pop_15to64)
+pop_jail_work$FIPS <- sprintf("%06d", pop_jail_work$FIPS) %>%
+  substr(2, 6)
+jail_arrest <- left_join(jail_arrest, pop_jail_work, by = c("YEAR", "FIPS"))
+
 # Rural
 rural <- jail_arrest[jail_arrest$urbanicity == "rural", ] %>%
   filter(!is.na(YEAR)) %>%
