@@ -18,6 +18,15 @@ setwd("D:/NYU/CAREER/Vera Institute of Justice/Work Materials")
 load("jail_arrest_county.RData")
 
 
+# Add the working age population to the dataset
+setwd("D:/NYU/CAREER/Vera Institute of Justice/Work Materials")
+pop_jail_work <- read_csv("incarceration_trends.csv") %>%
+  select(YEAR = year, FIPS = fips, pop_jail_work = total_pop_15to64)
+pop_jail_work$FIPS <- sprintf("%06d", pop_jail_work$FIPS) %>%
+  substr(2, 6)
+jail_arrest <- left_join(jail_arrest, pop_jail_work, by = c("YEAR", "FIPS"))
+
+
 # Get the FSTATE from the first two character of FIPS 
 # because the original FSTATE is missing for some counties
 jail_arrest$FSTATE <- as.numeric(substr(jail_arrest$FIPS, 1, 2))
@@ -101,7 +110,7 @@ source("Rate Calculation Function.R")
 ```{r}
 rates <- list()
 for (i in 1:4) {
-  rates[[i]] <- cal_rates(urbanicity[[i]])
+  rates[[i]] <- cal_rates(urbanicity[[i]], pop = urbanicity[[i]]$pop_jail)
 }
 
 # In 1977 all the jail admission rates are 0, which does not look right.
@@ -120,15 +129,15 @@ for (i in 1:4) {
 rates_list <- list()
 geo_names <- c("rural", "small/mid", "suburb", "urban")
 for (i in 1:4) {
-  dirc <- rates_list[[i]] <- cal_rates(urbanicity[[i]], method = "direct")
+  dirc <- rates_list[[i]] <- cal_rates(urbanicity[[i]], pop = urbanicity[[i]]$pop_jail, method = "direct")
   rates_list[[i]]$arrest_dirc <- dirc$rate_arrest
   rates_list[[i]]$jail_dirc <- dirc$rate_jail
   
-  simp <- cal_rates(urbanicity[[i]], method = "simple")
+  simp <- cal_rates(urbanicity[[i]], pop = urbanicity[[i]]$pop_jail, method = "simple")
   rates_list[[i]]$arrest_simp <- simp$rate_arrest
   rates_list[[i]]$jail_simp <- simp$rate_jail
   
-  wt <- cal_rates(urbanicity[[i]], method = "weighted")
+  wt <- cal_rates(urbanicity[[i]], pop = urbanicity[[i]]$pop_jail, method = "weighted")
   rates_list[[i]]$arrest_wt <- wt$rate_arrest
   rates_list[[i]]$jail_wt <- wt$rate_jail
   
@@ -444,5 +453,147 @@ for (i in 2:4) {
 }
 
 legend("topleft", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3,
+       legend = c("rural", "small/mid", "suburban", "urban"))
+```
+
+
+
+
+
+
+
+
+# Use the working age population:
+
+## Calculate the rates for each geographical type
+```{r}
+rates_popwork <- list()
+for (i in 1:4) {
+  rates_popwork[[i]] <- cal_rates(urbanicity[[i]], pop = urbanicity[[i]]$pop_jail_work)
+}
+
+# In 1977 all the jail admission rates are 0, which does not look right.
+# In 1978-1980, 2015-2016, either arrest data or incarceration data are missing.
+# Remove these years
+for (i in 1:4) {
+  rates_popwork[[i]] <- rates_popwork[[i]] %>%
+    filter(! (YEAR %in% c(1977:1980, 2015:2016)))
+}
+```
+
+
+## Plot the incarceration trends
+
+```{r}
+color = c("gray30", "coral4", "chartreuse4", "blue4")
+
+#par(mar = c(5, 4, 6, 2) + 0.1, xpd = TRUE)
+plot(x = rates_popwork[[1]]$YEAR, y = rates_popwork[[1]]$rate_jail, type = "l", col = color[1],
+     main = "Jail Admission Rate by Geography", 
+     xlab = "Year", ylab = "Rate", xaxt='n', yaxt='n', font.lab = 4, bty = 'n',
+     ylim = c(0, max(rates_popwork[[1]]$rate_jail, rates_popwork[[2]]$rate_jail, rates_popwork[[3]]$rate_jail, rates_popwork[[4]]$rate_jail)))
+for (i in 2:4) {
+  lines(x = rates_popwork[[i]]$YEAR, y = rates_popwork[[i]]$rate_jail, type = "l", col = color[i])
+}
+
+axis(side = 1, at = seq(from = 1980, to = 2015, by = 5), 
+     labels = seq(from = 1980, to = 2015, by = 5), col = "azure3")
+axis(side = 2, at = seq(from = 0, to = 8000, by = 1000), 
+     labels = seq(from = 0, to = 8000, by = 1000), col = "azure3")
+
+legend("bottomright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3,
+       legend = c("rural", "small/mid", "suburban", "urban"))
+```
+
+
+## Plot the arrest trends
+
+```{r}
+color = c("gray30", "coral4", "chartreuse4", "blue4")
+
+#par(mar = c(5, 4, 6, 2) + 0.1, xpd = TRUE)
+plot(x = rates_popwork[[1]]$YEAR, y = rates_popwork[[1]]$rate_arrest, type = "l", col = color[1],
+     main = "Arrest Rate by Geography", 
+     xlab = "Year", ylab = "Rate", xaxt='n', yaxt='n', font.lab = 4, bty = 'n',
+     ylim = c(0, max(rates_popwork[[1]]$rate_arrest, rates_popwork[[2]]$rate_arrest, rates_popwork[[3]]$rate_arrest, rates_popwork[[4]]$rate_arrest, na.rm = TRUE)))
+for (i in 2:4) {
+  lines(x = rates_popwork[[i]]$YEAR, y = rates_popwork[[i]]$rate_arrest, type = "l", col = color[i])
+}
+
+axis(side = 1, at = seq(from = 1980, to = 2015, by = 5), 
+     labels = seq(from = 1980, to = 2015, by = 5), col = "azure3")
+axis(side = 2, at = seq(from = 0, to = 8000, by = 1000), 
+     labels = seq(from = 0, to = 8000, by = 1000), col = "azure3")
+
+legend("bottomright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3,
+       legend = c("rural", "small/mid", "suburban", "urban"))
+```
+
+
+# Plot the arrest and jail admission rates together
+
+```{r}
+color = c("gray30", "coral4", "chartreuse4", "blue4")
+
+par(mar = c(5, 4.5, 4, 4.5) + 0.1, xpd = TRUE)
+plot(x = rates_popwork[[1]]$YEAR, y = rates_popwork[[1]]$rate_jail, type = "l", col = color[1],
+     main = "Jail Admission and Arrest Rate by Geography", 
+     xlab = "Year", ylab = "Rate", xaxt='n', yaxt='n', font.lab = 4, bty = 'n',
+     ylim = c(0, max(rates_popwork[[1]]$rate_jail, rates_popwork[[2]]$rate_jail, rates_popwork[[3]]$rate_jail, rates_popwork[[4]]$rate_jail, rates_popwork[[1]]$rate_arrest, rates_popwork[[2]]$rate_arrest, rates_popwork[[3]]$rate_arrest, rates_popwork[[4]]$rate_arrest, na.rm = TRUE)))
+for (i in 2:4) {
+  lines(x = rates_popwork[[i]]$YEAR, y = rates_popwork[[i]]$rate_jail, type = "l", col = color[i])
+}
+for (i in 1:4) {
+  lines(x = rates_popwork[[i]]$YEAR, y = rates_popwork[[i]]$rate_arrest, type = "l", col = color[i], lty = "dashed")
+}
+
+axis(side = 1, at = seq(from = 1980, to = 2016, by = 4), 
+     labels = seq(from = 1980, to = 2016, by = 4), col = "azure3")
+axis(side = 2, at = seq(from = 0, to = 8000, by = 1000), 
+     labels = seq(from = 0, to = 8000, by = 1000), col = "azure3")
+
+legend("topright", col = color, pch = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3, inset = c(-0.18, 0),
+       legend = c("rural", "small/mid", "suburb", "urban"))
+legend("bottomright", col = "black", lty = c("solid", "dashed"), bty = "n", text.width = 5, cex = 1, text.font = 3, inset = c(-0.06, 0),
+       legend = c("Jail admission rate", "Arrest rate"))
+
+par(mar = c(5, 4, 4, 2) + 0.1, xpd = TRUE)
+```
+
+
+# SES of counties in different geographical types
+
+## Poverty percentage
+```{r}
+pov_popwork <- list()
+for (i in 1:4) {
+  pov_popwork[[i]] <- cal_ses(urbanicity[[i]], urbanicity[[i]]$Pct_Poverty, pop = urbanicity[[i]]$pop_jail_work) %>%
+    #Keep 1995-2014 when the data are annually consecutive
+    filter(YEAR >= 1995, YEAR <=  2014)
+}
+```
+
+### Plot the poverty trends
+Note that there is no county level poverty data at 1996, so the plot starts at 1997 even there is data in 1995.
+
+```{r}
+color = c("gray30", "coral4", "chartreuse4", "blue4")
+
+par(mar = c(5, 4, 6, 2) + 0.1, xpd = TRUE)
+plot(x = pov_popwork[[1]]$YEAR, y = pov_popwork[[1]]$ses, type = "l", col = color[1],
+     main = "Percentage of People below Poverty for Different Geographical Types", 
+     xlab = "Year", ylab = "Poverty %", font.lab = 4, xaxt='n', yaxt='n', font.lab = 4, bty = 'n',
+     ylim = c(min(pov_popwork[[1]]$ses, pov_popwork[[2]]$ses, pov_popwork[[3]]$ses, pov_popwork[[4]]$ses, na.rm = TRUE),
+              max(pov_popwork[[1]]$ses, pov_popwork[[2]]$ses, pov_popwork[[3]]$ses, pov_popwork[[4]]$ses, na.rm = TRUE)))
+for (i in 2:4) {
+  lines(x = pov_popwork[[i]]$YEAR, y = pov_popwork[[i]]$ses, type = "l", col = color[i])
+}
+
+axis(side = 1, at = seq(from = 1995, to = 2015, by = 5), 
+     labels = seq(from = 1995, to = 2015, by = 5), col = "azure3")
+axis(side = 2, at = seq(from = 7, to = 19, by = 2), 
+     labels = seq(from = 7, to = 19, by = 2), col = "azure3")
+
+legend(x = 1994, y = 21, col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3,
        legend = c("rural", "small/mid", "suburban", "urban"))
 ```
