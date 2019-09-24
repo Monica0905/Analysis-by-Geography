@@ -114,7 +114,7 @@ source("Rate Calculation Function.R")
 ```{r}
 rates <- list()
 for (i in 1:4) {
-  rates[[i]] <- cal_rates(urbanicity[[i]])
+  rates[[i]] <- cal_rates(urbanicity[[i]], pop = urbanicity[[i]]$pop_jail)
 }
 
 # In 1977 all the jail admission rates are 0, which does not look right.
@@ -133,15 +133,15 @@ for (i in 1:4) {
 rates_list <- list()
 geo_names <- c("rural", "small/mid", "suburb", "urban")
 for (i in 1:4) {
-  dirc <- rates_list[[i]] <- cal_rates(urbanicity[[i]], method = "direct")
+  dirc <- rates_list[[i]] <- cal_rates(urbanicity[[i]], pop = urbanicity[[i]]$pop_jail, method = "direct")
   rates_list[[i]]$arrest_dirc <- dirc$rate_arrest
   rates_list[[i]]$jail_dirc <- dirc$rate_jail
   
-  simp <- cal_rates(urbanicity[[i]], method = "simple")
+  simp <- cal_rates(urbanicity[[i]], pop = urbanicity[[i]]$pop_jail, method = "simple")
   rates_list[[i]]$arrest_simp <- simp$rate_arrest
   rates_list[[i]]$jail_simp <- simp$rate_jail
   
-  wt <- cal_rates(urbanicity[[i]], method = "weighted")
+  wt <- cal_rates(urbanicity[[i]], pop = urbanicity[[i]]$pop_jail, method = "weighted")
   rates_list[[i]]$arrest_wt <- wt$rate_arrest
   rates_list[[i]]$jail_wt <- wt$rate_jail
   
