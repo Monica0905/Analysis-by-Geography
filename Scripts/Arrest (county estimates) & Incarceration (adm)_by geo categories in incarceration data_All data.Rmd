@@ -191,12 +191,12 @@ legend("topleft", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, t
 color = c("gray30", "coral4", "chartreuse4", "blue4")
 
 #par(mar = c(5, 4, 6, 2) + 0.1, xpd = TRUE)
-plot(x = rates[[1]]$YEAR, y = rates[[1]]$rate_jail, type = "l", col = color[1],
+plot(x = rates[[1]]$YEAR, y = rates[[1]]$rate_jail, type = "l", col = color[1], lwd = 2,
      main = "Jail Admission Rate by Geography", 
      xlab = "Year", ylab = "Rate", xaxt='n', yaxt='n', font.lab = 4, bty = 'n',
      ylim = c(0, max(rates[[1]]$rate_jail, rates[[2]]$rate_jail, rates[[3]]$rate_jail, rates[[4]]$rate_jail)))
 for (i in 2:4) {
-  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_jail, type = "l", col = color[i])
+  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_jail, type = "l", col = color[i], lwd = 2)
 }
 
 axis(side = 1, at = seq(from = 1980, to = 2015, by = 5), 
@@ -204,7 +204,7 @@ axis(side = 1, at = seq(from = 1980, to = 2015, by = 5),
 axis(side = 2, at = seq(from = 0, to = 6000, by = 1000), 
      labels = seq(from = 0, to = 6000, by = 1000), col = "azure3")
 
-legend("bottomright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3,
+legend("bottomright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3, lwd = 2,
        legend = c("rural", "small/mid", "suburban", "urban"))
 ```
 
@@ -233,12 +233,12 @@ legend("topright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, 
 color = c("gray30", "coral4", "chartreuse4", "blue4")
 
 #par(mar = c(5, 4, 6, 2) + 0.1, xpd = TRUE)
-plot(x = rates[[1]]$YEAR, y = rates[[1]]$rate_arrest, type = "l", col = color[1],
+plot(x = rates[[1]]$YEAR, y = rates[[1]]$rate_arrest, type = "l", col = color[1], lwd = 2,
      main = "Arrest Rate by Geography", 
      xlab = "Year", ylab = "Rate", xaxt='n', yaxt='n', font.lab = 4, bty = 'n',
      ylim = c(0, max(rates[[1]]$rate_arrest, rates[[2]]$rate_arrest, rates[[3]]$rate_arrest, rates[[4]]$rate_arrest, na.rm = TRUE)))
 for (i in 2:4) {
-  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_arrest, type = "l", col = color[i])
+  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_arrest, type = "l", col = color[i], lwd = 2)
 }
 
 axis(side = 1, at = seq(from = 1980, to = 2015, by = 5), 
@@ -246,7 +246,7 @@ axis(side = 1, at = seq(from = 1980, to = 2015, by = 5),
 axis(side = 2, at = seq(from = 0, to = 6000, by = 1000), 
      labels = seq(from = 0, to = 6000, by = 1000), col = "azure3")
 
-legend("bottomright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3,
+legend("bottomright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3, lwd = 2,
        legend = c("rural", "small/mid", "suburban", "urban"))
 ```
 
@@ -256,19 +256,19 @@ legend("bottomright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.0
 color = c("gray30", "coral4", "chartreuse4", "blue4")
 
 par(mar = c(5, 4, 4, 6) + 0.1, xpd = TRUE)
-plot(x = rates[[1]]$YEAR, y = rates[[1]]$rate_jail, type = "l", col = color[1],
+plot(x = rates[[1]]$YEAR, y = rates[[1]]$rate_jail, type = "l", col = color[1], lwd = 2,
      main = "Jail Admission and Arrest Rate for Different Geographical Types", 
      xlab = "Year", ylab = "Arrest Rate", font.lab = 4,
      ylim = c(min(rates[[1]]$rate_jail, rates[[2]]$rate_jail, rates[[3]]$rate_jail, rates[[4]]$rate_jail, rates[[1]]$rate_arrest, rates[[2]]$rate_arrest, rates[[3]]$rate_arrest, rates[[4]]$rate_arrest, na.rm = TRUE),
               max(rates[[1]]$rate_jail, rates[[2]]$rate_jail, rates[[3]]$rate_jail, rates[[4]]$rate_jail, rates[[1]]$rate_arrest, rates[[2]]$rate_arrest, rates[[3]]$rate_arrest, rates[[4]]$rate_arrest, na.rm = TRUE)))
 for (i in 2:4) {
-  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_jail, type = "l", col = color[i])
+  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_jail, type = "l", col = color[i], lwd = 2)
 }
 for (i in 1:4) {
-  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_arrest, type = "l", col = color[i], lty = "dashed")
+  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_arrest, type = "l", col = color[i], lty = "dashed", lwd = 2)
 }
 
-legend("topright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3, inset = c(-0.28, 0),
+legend("topright", col = color, lty = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3, inset = c(-0.28, 0), lwd = 2,
        legend = c("rural", "small/mid", "suburb", "urban"))
 
 par(mar = c(5, 4, 4, 2) + 0.1)
@@ -279,15 +279,15 @@ par(mar = c(5, 4, 4, 2) + 0.1)
 color = c("gray30", "coral4", "chartreuse4", "blue4")
 
 par(mar = c(5, 4.5, 4, 4.5) + 0.1, xpd = TRUE)
-plot(x = rates[[1]]$YEAR, y = rates[[1]]$rate_jail, type = "l", col = color[1],
+plot(x = rates[[1]]$YEAR, y = rates[[1]]$rate_jail, type = "l", col = color[1], lwd = 2,
      main = "Jail Admission and Arrest Rate by Geography", 
      xlab = "Year", ylab = "Rate", xaxt='n', yaxt='n', font.lab = 4, bty = 'n',
      ylim = c(0, max(rates[[1]]$rate_jail, rates[[2]]$rate_jail, rates[[3]]$rate_jail, rates[[4]]$rate_jail, rates[[1]]$rate_arrest, rates[[2]]$rate_arrest, rates[[3]]$rate_arrest, rates[[4]]$rate_arrest, na.rm = TRUE)))
 for (i in 2:4) {
-  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_jail, type = "l", col = color[i])
+  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_jail, type = "l", col = color[i], lwd = 2)
 }
 for (i in 1:4) {
-  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_arrest, type = "l", col = color[i], lty = "dashed")
+  lines(x = rates[[i]]$YEAR, y = rates[[i]]$rate_arrest, type = "l", col = color[i], lty = "dashed", lwd = 2)
 }
 
 axis(side = 1, at = seq(from = 1980, to = 2016, by = 4), 
@@ -295,9 +295,9 @@ axis(side = 1, at = seq(from = 1980, to = 2016, by = 4),
 axis(side = 2, at = seq(from = 0, to = 6000, by = 1000), 
      labels = seq(from = 0, to = 6000, by = 1000), col = "azure3")
 
-legend("topright", col = color, pch = 1, bty = "n", text.width = 5, cex = 1.09, text.font = 3, inset = c(-0.18, 0),
+legend("topright", col = color, pch = 16, bty = "n", text.width = 5, cex = 1.09, text.font = 3, inset = c(-0.175, 0),
        legend = c("rural", "small/mid", "suburb", "urban"))
-legend("bottomright", col = "black", lty = c("solid", "dashed"), bty = "n", text.width = 5, cex = 1, text.font = 3, inset = c(-0.06, 0),
+legend("bottomright", col = "black", lty = c("solid", "dashed"), bty = "n", text.width = 5, cex = 1, text.font = 3, inset = c(-0.06, 0), lwd = 2,
        legend = c("Jail admission rate", "Arrest rate"))
 
 par(mar = c(5, 4, 4, 2) + 0.1, xpd = TRUE)
